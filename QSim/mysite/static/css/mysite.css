@@ -1,0 +1,129 @@
+    :root {
+  --blogBackgroundColor: rgb(182,182,182);
+}
+
+@font-face {
+  font-family: Signature;
+  src: url(fonts/FlourishOrchestral.ttf);
+}
+
+.fade-in {
+  animation: fadeIn 1.6s;
+  -webkit-animation: fadeIn 1.6s;
+  -moz-animation: fadeIn 1.6s;
+  -o-animation: fadeIn 1.6s;
+  -ms-animation: fadeIn 1.6s;
+}
+
+@keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+@-moz-keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+@-webkit-keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+@-o-keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+@-ms-keyframes fadeIn {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+html {
+	transition-duration: 0.5s;
+  background-color: var(--blogBackgroundColor);
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll;
+  overflow-x: hidden; 
+ 	padding-top: 60px;
+
+}
+
+html::-webkit-scrollbar {
+    display: none; /* for Chrome, Safari, and Opera */
+}
+
+style, script {
+	display: none;
+}
+
+
+body 
+{
+	width: 100%;
+	margin:  0px;
+}
+
+p {
+	font-size: 16px;
+	font-weight: 100;
+}
+
+div {
+
+}
+
+img {
+	border-radius: 22px;
+}
+
+a {
+	text-decoration: none;
+	color:  rgb(138, 144, 247);
+}
+
+title {
+	display: none;
+}
+
+#Pantheon-Button {
+	position: fixed;
+	top:  32px;
+	right: 32px;
+	font-size: 26px;
+	color:  rgb(62,62,62);
+	background: rgba(0,0,0,0);
+	border-radius: 1000px;
+	box-shadow: 0px 0px 10px rgb(122 122 122);
+	width: 42px;
+	height: 42px;
+	z-index: 2;
+}
+
+#Dark-Mode-Button {
+	position: fixed;
+	bottom:  32px;
+	left: 32px;
+	font-size: 23px;
+	color:  rgb(106,106,106);
+	width: 42px;
+	height: 42px;
+	border-radius: 22px;
+	z-index: 2;
+	border-style: none;
+	background: rgba(0,0,0,0);
+	box-shadow: 0px 0px 10px rgb(122 122 122);
+}
+
+.centered-flex {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.wide {
+	width: 100%;
+}

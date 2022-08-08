@@ -1,0 +1,190 @@
+
+
+.Entrance-Deity-Title {
+	font-weight: 100;
+	font-family: "Helvetica Neue";
+  color: rgba(0,0,0,0);
+  font-size: calc( ((100vw) / 6));
+  min-height: calc(98vh);
+	flex-direction: column;
+	justify-content: flex-end;
+	margin:  0px;
+	margin-bottom: 320px;
+  color: var(--dominantHex);
+  text-shadow:
+    0 0 7px var(--dominantHex),
+    0 0 10px var(--dominantHex),
+    0 0 21px var(--dominantHex),
+    0 0 42px var(--dominantHex),
+    0 0 82px var(--dominantHex),
+    0 0 92px var(--dominantHex),
+    0 0 102px var(--dominantHex),
+    0 0 151px var(--dominantHex);
+}
+
+.blog-wrapper h2 {
+	font-weight: 100;
+	font-family: "Helvetica Neue";
+	font-size: calc(720/30);
+	color:  black;
+}
+
+.paragraph p, .topic p {
+	max-width: 720px;
+	line-height: 2em;
+	text-indent: 16px;
+	font-synthesis: 16px;
+}
+
+.intro {
+	font-weight: 100;
+	margin-bottom: 20px;
+	font-size: 18px;
+}
+
+.Divider {
+	padding: 1px;
+	width: 100%;
+	border-radius: 100px;
+	background-color: rgb(32,32,32);
+}
+
+.blog-wrapper {
+	padding-top: 32px;
+	width: 100%;
+	background-color: rgba(0,0,0,0);
+	padding-bottom: 1200px;
+	flex-wrap: wrap;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 60px 20px; /* row-gap column gap */
+}
+
+.blog-wrapper img {
+max-width:calc(98vw);
+max-height: calc(98vh);
+width: auto;
+height: auto;	
+}/* max-width: calc(98vw) if the width is smaller than the height in the device. */
+
+.blog-wrapper .caption {
+  font-size: 13px;
+}
+
+.page-wrapper { /*Entrance Image*/
+	width: 98%;
+  background-color: var(--blogBackgroundColor);
+	background-size: calc(98vh);
+	background-position: center top;
+	background-repeat: no-repeat;
+	background-blend-mode: lighten;
+	transition-duration: 0.5s;
+	margin-right: 12px;
+	margin-left: 12px;
+	}
+
+.page-wrapper img {
+	box-shadow: 0px 0px 6px 2px rgb(62,62,62);
+}
+
+.Symbol {
+	position: relative;
+	margin-left: calc(-100vw/7);
+}
+
+.Symbol img {
+	min-width: 150px;
+	max-width: calc(100vw/4);
+	height: auto;
+	width: auto;
+	box-shadow: none;
+	filter: opacity(20%);
+}
+
+.quotation {
+	padding: 22px;
+  border-radius: 50px;
+  box-shadow: inset 4px 4px 10px rgb(160,160,160),
+            inset -4px -4px 10px rgb(212,212,212);
+  max-width: 420px;
+}
+
+.quotation p {
+	font-style: italic;
+	line-height: 2em;
+}
+
+.author {
+	font-family: "EB Garamond";
+}
+
+/*Artwork Toggle */
+
+.artwork-switch-wrapper {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.artwork-toggle {
+	width: 180px;
+	height: 100px;
+	border-radius: 1000px;
+	opacity: 0;
+	z-index: 1;
+}
+
+.artwork-toggle-div {
+	height: 32px;
+	width: 72px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0);
+	transition-duration: 0.42s;	
+	border-style: solid;
+	border-width: 2px;
+	font-size: 13px;
+	z-index: 0;
+  -webkit-transform: translateX(-60px);
+  -ms-transform: translateX(-60px);
+  transform: translateX(-60px);
+}
+
+.artwork-toggle-div-for-text {
+	flex-direction: row;
+	margin-top: -60px;
+	margin-bottom: 20px;
+}
+
+.artwork-toggle:checked + div +.edited {
+	display: none;
+}
+
+.artwork-toggle:checked + div  p + .artwork-toggle-div {
+  -webkit-transform: translateX(65px);
+  -ms-transform: translateX(65px);
+  transform: translateX(65px);
+}
+
+.artwork-toggle:not(:checked) + div + .edited + .original-artwork{
+	display: none;
+}
+
+/* Artwork Toggle ||  */
+
+
+/*Dark Mode*/
+
+.dark-mode-visual img{
+	  box-shadow: 0px 0px 6px 2px rgb(0,0,0);
+}
+
+.dark-mode-quotation {
+box-shadow: inset 3px 3px 10px #212121,
+            inset -3px -3px 10px #000000;
+}
+
+.dark-mode-invert {
+	filter:  invert(1);
+}
+
+/*Dark Mode || */

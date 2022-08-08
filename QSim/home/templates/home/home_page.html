@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% load static %}
+
+{% block body_class %}template-homepage{% endblock %}
+
+{% block content %}
+    {{ page.body|richtext }}
+
+<style>
+
+html {
+    background: #B1B9B1;
+}
+
+#Pantheon-Button, #Dark-Mode-Button {
+    display: none;
+}
+
+.Pantheon-Grid {
+    flex-direction: row;
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+    flex-wrap: wrap;
+}
+
+body {
+    padding-top: 120px;
+    padding-bottom: 180px;
+    min-height: 1200px;
+    z-index: 0;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+input, .neomorphic {
+    width:  120px;
+    height:  50px;
+    border-radius: 8px;
+    font-size: 42px;
+    text-align: center;
+    border-style: none;
+border-radius: 13px;
+background: linear-gradient(145deg, #9ea79f, #bcc6bd);
+box-shadow:  9px 9px 19px #969d96,
+             -9px -9px 19px #cad5cc;
+    outline: none;
+    font-family: "Helvetica Neue";
+    font-weight: 200;    
+    font-size: 28px;
+}
+
+.line {
+    position: relative;
+    left: 0px;
+    top: 0px;
+    width: 50px;
+    padding: 1px;
+    background-color: #848D85;
+box-shadow:  9px 9px 19px #969d96,
+             -9px -9px 19px #cad5cc;
+}
+
+.result-matrix {
+    display: grid;
+    column-gap: 30px;
+    row-gap: 30px;
+    border-left-style: solid;
+    border-right-style: solid;
+    margin-left: 12px;
+    font-family: "Helvetica Neue";
+    font-weight: 200;
+}
+
+.result-constant {
+    font-family: "Helvetica Neue";
+    font-weight: 200;    
+    font-size: 20px;
+}
+
+.result-matrix, th, td {
+
+}
+
+.result-section {
+    margin-top: 100px;
+}
+
+td {
+    padding: 5px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.qubit {
+    margin-right: 50px;
+}
+
+.calculate-button {
+    margin-top: 100px;
+    width: 140px;
+    height: 60px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: "Helvetica Neue";
+    font-weight: 200;
+    transition-duration: 0.2s;
+}
+
+.calculate-button:hover {
+    width: 180px;
+    cursor: pointer;
+}
+
+.coordinate-input-wrapper {
+    font-family: "Helvetica Neue";
+    font-weight: 200;    
+    font-size: 20px;
+    margin-bottom: 100px;
+}
+
+.coordinate-input {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+</style>
+
+<script src="{% static 'js/aos-master/dist/aos.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'js/aos-master/dist/aos.css' %}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/9.3.2/math.js"></script>
+<script>
+  AOS.init();
+</script>
+
+<div class="Pantheon-Wrapper centered-flex">
+
+<div class="coordinate-input-wrapper">
+    <label>X:</label><input type="text" class="coordinate-input">
+    <label>Y:</label><input type="text" class="coordinate-input">
+    <button type="button"  onclick="renderCircuit()" class="calculate-button neomorphic" style="margin-left: 50px;"> 
+          Render Circuit
+    </button> 
+    <p>⨁</p>
+</div>
+
+<div class="circuit-input centered-flex">
+
+<form id="circuit-input-form" class="centered-flex">
+
+<!--<div class="Pantheon-Grid centered-flex">
+    <input type="text" class="qubit">
+    {% for i in '012345'|make_list %}
+            <input type="text" class="circuit-line">
+            <div class="line"></div>
+    {% endfor %}
+</div>-->
+
+{% with index=8 %} 
+
+<div class="Pantheon-Grid centered-flex">
+        <input type="text" class="qubit matrix-input">
+        {% with ''|center:index as range %}
+        {% for _ in range %}
+                <input type="text" class="circuit-line matrix-input">
+                <div class="line"></div>
+        {% endfor %}
+        {% endwith %}
+    </div>
+</div>
+
+{% endwith %}
+
+  <button type="button"  onclick="calculateMatrix()" class="calculate-button neomorphic"> 
+      Calculate
+  </button> 
+</form>
+</div>
+
+<div class="result-section" style="display:  flex; flex-direction: row; align-items: center; justify-content: center;">
+
+<table class="result-matrix" id="resultMatrix">
+</table>
+
+</div>
+
+</div>
+
+
+
+<script type="text/javascript">
+
+
+var qubit0 = math.matrix([[1],[0]]); // A 2x1 matrix which is a qubit.
+var qubit1 = math.matrix([[0],[1]]);
+var XGate = math.matrix([[0,1],[1,0]]);
+var IGate = math.matrix([[1,0],[0,1]]);
+var ZGate = math.matrix([[1,0],[0,-1]]);
+var HGateBase = math.matrix([[0.7071067812,0.7071067812],[0.7071067812,-0.7071067812]]);
+var CNOTGate = math.matrix([[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0]]);
+var reverseCNOTGate = math.matrix([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]]);
+
+var resultMatrix = document.getElementById("resultMatrix")
+var circuitLines = document.getElementsByClassName("Pantheon-Grid"); // 2**length of this list is our dimensionality.
+var circuitInput = document.getElementsByClassName("circuit-input")[0];
+var gateArray = ["X", "I", "1", "0","CNOT","⨁", "H","Z"];
+var matrixArray = [];
+var qubitArray = [];
+var X = 0;
+var Y = 0;
+// Get the inputs and turn them into a list of matrices.
+// If empty IGate by default.
+
+
+function validateGate(gateString){
+    for (var i = 0; i < gateArray.length; i++) {
+        if( gateString == gateArray[i]){
+            return true;      
+        }
+    }
+    return false;
+}
+
+function convertGateStringToMatrix(gateString){
+    if( gateString == "X"){
+        return XGate;
+    }else if( gateString == "I"){
+        return IGate;
+    }else if( gateString == "1"){
+        return qubit1;
+    }else if( gateString == "0"){
+        return qubit0;
+    }else if(gateString == "Z"){
+        return ZGate;
+    }else if( gateString == "CNOT"){
+        return reverseCNOTGate;
+    }else if( gateString == "H"){
+        return HGateBase;
+    }else if(gateString == "⨁"){
+        return CNOTGate;
+    }else{
+        return false;
+    }
+}
+
+function renderArray(){
+
+  // After the for loop that validates the input, append each value into a XxY array.
+  matrixArray = [];
+  qubitArray = [];
+
+  var gateList = document.getElementsByClassName("matrix-input"); // The list of all gates.
+
+  listCounter = 0;
+  for(var t = 0; t < Y; t++){
+    var arr = new Array(X+1); // Populate, add to matrixArray.
+    for (var i = 0; i < X+1; i++) { // Validating the input with this for loop.
+        var gateString = gateList[listCounter].value;
+        if(!validateGate(gateString)){
+            console.log("You have an invalid gate."); // Here add an alert later.
+            return false;
+        }
+        arr[i] = convertGateStringToMatrix(gateString); // Gate is valid. Add to the 2D array.
+        listCounter = listCounter + 1;
+    }
+    matrixArray.push(arr);
+  }
+
+  for(var c = 0; c < (X+1)*Y; c = c + (X+1)){
+    var qubitString = gateList[c].value;
+    qubitArray.push(convertGateStringToMatrix(qubitString));
+  }
+}
+
+// function changeResultMatrixWithDimensionality(d){
+//     // change dimension to 0 first.
+//     resultMatrix.innerHTML = "";
+//     for (let i = 0; i < d; i++) {
+//         var row = resultMatrix.insertRow(i);
+//         for (let i = 0; i < d; i++) {
+//             var cell = row.insertCell(i);
+//             cell.innerHTML = "∆";
+//         }
+//     }
+// }
+
+function changeResultMatrixWithDimensionality(d){
+    // change dimension to 0 first.
+    resultMatrix.innerHTML = "";
+    for (let i = 0; i < d; i++) {
+        var row = resultMatrix.insertRow(i);
+        for (let i = 0; i < 1; i++) {
+            var cell = row.insertCell(i);
+            cell.innerHTML = "∆";
+        }
+    }
+}
+
+function appendHtml(el, str) {
+  var div = document.createElement('div');
+  div.innerHTML = str;
+  while (div.children.length > 0) {
+    el.appendChild(div.children[0]);
+  }
+}
+
+function createCircuitLineHTML(gateCount){
+
+    var circuitLineHTMLpart1 = `
+<div class="Pantheon-Grid centered-flex">
+<input type="text" class="qubit matrix-input">
+`
+
+    var circuitLineHTMLpart2 = `
+
+<input type="text" class="circuit-line matrix-input" value="I">
+<div class="line"></div>
+
+`
+
+    var circuitLineHTMLpart3 = `
+</div>
+`
+
+
+    for (var i = 0; i < gateCount; i++) {
+        circuitLineHTMLpart1 = circuitLineHTMLpart1.concat(circuitLineHTMLpart2);
+    }
+
+    circuitLineHTMLpart1 = circuitLineHTMLpart1.concat(circuitLineHTMLpart3);
+
+    return(circuitLineHTMLpart1);
+}
+
+function renderCircuit(){
+
+    circuitInput.innerHTML = "";
+    var XLength = document.getElementsByClassName("coordinate-input")[0].value;
+    XLength = parseInt(XLength);
+    X = XLength
+    var circuitLineHTML = createCircuitLineHTML(XLength);
+
+    var YLength = document.getElementsByClassName("coordinate-input")[1].value;
+    Y = YLength;
+    changeResultMatrixWithDimensionality(math.pow(2,YLength));
+
+    // add YLength many circuit line html's
+    for (let i = 0; i < YLength; i++) {
+        appendHtml(circuitInput, circuitLineHTML);
+    }
+
+}
+
+function changeResultMatrixElement(x,y, i) {
+
+  var row = resultMatrix.getElementsByTagName("tr")[x];
+  var td = row.getElementsByTagName("td")[y];
+
+  td.innerHTML = i;
+}
+
+function changeResultMatrix(matrix){
+    for (var i = 0; i < matrix._data.length; i++) {
+        for (var j = 0; j < matrix._data[i].length; j++) {
+            changeResultMatrixElement(i ,j, matrix._data[i][j]);
+        }
+    }
+}
+
+function handleConstant(){ // use normal root function at first.
+    return false;
+}
+
+function calculateKronecker(matrixArray){
+    var endMatrix = matrixArray[0];
+
+    for(var i = 1; i<matrixArray.length; i++){
+        endMatrix = math.kron(endMatrix, matrixArray[i]);
+    }
+    return endMatrix;
+}
+
+function calculateMultiplication(matrixArray){
+    var endMatrix = matrixArray[0];
+
+    for(var i = 1; i<X; i++){
+        endMatrix = math.multiply(endMatrix, matrixArray[i]);
+    }
+    return endMatrix;
+}
+
+function calculateMatrix(){ // First calculate without any conditional gates.
+    renderArray();
+    var arrayOfMatricesToBeMultiplied = [];
+    for(var x = X; 0<x; x--){ // down and left for loop for circuit gates.
+        var arrayOfMatricesToBeKronockered = []
+        for(var y = 0; y<Y; y++){
+            arrayOfMatricesToBeKronockered.push(matrixArray[y][x]);
+        }
+        arrayOfMatricesToBeKronockered = checkArrayOfMatricesForConditionalGates(arrayOfMatricesToBeKronockered);
+        //return false;
+
+        if( arrayOfMatricesToBeKronockered.length > 1){
+            arrayOfMatricesToBeMultiplied.push(calculateKronecker(arrayOfMatricesToBeKronockered));
+        }
+        else{
+            arrayOfMatricesToBeMultiplied.push(arrayOfMatricesToBeKronockered[0]);
+        }
+    }
+    var theLastEnd = calculateMultiplication(arrayOfMatricesToBeMultiplied);
+    var qubitKronecker = calculateKronecker(qubitArray);
+    var theVeryLastEnd = math.multiply(theLastEnd, qubitKronecker);
+    changeResultMatrix(theVeryLastEnd);
+    return theLastEnd;
+}
+
+function checkArrayOfMatricesForConditionalGates(arrayOfMatricesToBeKronockered){
+    // get the array of matrices. Adjust if it has CNOT.
+    if(arrayOfMatricesToBeKronockered.includes(CNOTGate) || arrayOfMatricesToBeKronockered.includes(reverseCNOTGate)){// Array contains an empty element, and a CNOT before or after it, it has CNOT.
+        const indexOfCNOTGate = arrayOfMatricesToBeKronockered.indexOf(CNOTGate);
+        const indexOfReverseCNOTGate = arrayOfMatricesToBeKronockered.indexOf(reverseCNOTGate);
+        if( indexOfCNOTGate < indexOfReverseCNOTGate){
+            arrayOfMatricesToBeKronockered.splice(indexOfCNOTGate+1, 1); // CNOT comes first, delete the element that comes after.
+        }else{ 
+            arrayOfMatricesToBeKronockered.splice(indexOfReverseCNOTGate+1, 1); // ReverseCNOT comes first, delete the element that comes after.
+        }
+
+    }
+    return arrayOfMatricesToBeKronockered;
+}
+
+// function calculateState(arrayOfQubits, arrayOfGates){
+//     var resultArrayOfQubits = [];
+//     for(var i = 0; i<2; i++){
+//         var matrixMultiplication = math.multiply(arrayOfGates[i],arrayOfQubits[i]);
+//         resultArrayOfQubits.push(matrixMultiplication);
+//     }
+//     for(var i = 0; i<2; i++){
+//         console.log(resultArrayOfQubits[i]);
+//     }
+//     return math.kron(resultArrayOfQubits[0], resultArrayOfQubits[1]);
+// }
+
+// exampleArrayOfGates = [XGate, IGate];
+// exampleOfQubits = [qubit0, qubit1];
+// var tryIt = calculateState(exampleOfQubits, exampleArrayOfGates);
+
+//var matrixExample = math.multiply(IGate, qubit0);
+
+//var matrixKronecker = math.kron(IGate, XGate);
+
+// Print the matrix object out in an html object.
+
+</script>
+
+<script type="text/javascript">
+    
+</script>
+
+{% endblock %}

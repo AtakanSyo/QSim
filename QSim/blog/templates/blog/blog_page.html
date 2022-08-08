@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}template-blogpage{% endblock %}
+
+{% block content %}
+
+
+<script src="{% static 'js/aos-master/dist/aos.js' %}"></script>
+
+
+<script>
+  AOS.init();
+</script>
+
+<style>
+    :root {
+  --dominantHex: {{page.dominant_hex}};
+  --dominantRGB: {{page.dominant_rgb}};
+}
+
+html {
+    /*background: linear-gradient(0deg, rgb(240,240,240) 50% ,var(--dominantHex) 300%);*/
+}
+
+.Entrance-Deity img{
+    max-width: 18em;
+    height: auto;
+}
+
+
+</style>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/blog.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'js/aos-master/dist/aos.css' %}">
+<script src="{% static 'js/BackgroundColorAdjustment.js' %}"></script>
+{% for item in page.gallery_images.all|slice:":1" %}
+
+{% image item.image width-2000 as deity_image %}
+<div class="page-wrapper fade-in" style="background-image: url('{{ deity_image.url }}');">
+{% endfor %}
+
+
+<h1 data-aos="fade-in" data-aos-duration="1500" class="Entrance-Deity-Title" style="  -webkit-text-stroke: 2px var(--dominantHex) ; text-stroke: 2px var(--dominantHex) ">{{ page.title }}</h1>    
+
+
+<!-- Add opacity 0.1 layer with gradient background That is transparent to touch if possible. -->
+<div class="blog-wrapper">
+    {% for block in page.body %}
+        
+        {% if block.block_type == 'visual' %}
+                <div style="display:'block'" class="artwork-switch-wrapper">
+                    <input type="checkbox" class="artwork-toggle">
+                    <div class="artwork-toggle-div-for-text">
+                        <p>Edited</p>
+                            <div class="artwork-toggle-div"></div>
+                        <p>Original</p>
+                    </div>
+                    <div data-aos="fade-in" data-aos-duration="1500" class="visual edited">{% image block.value.image width-2000 %}</div>
+                    <div data-aos="fade-in" data-aos-duration="1500" class="visual original-artwork">{% image block.value.originalArtWork width-2000 %}</div>
+                    <p class="caption">{{ block.value.caption }} </p>
+                </div>
+        {% elif block.block_type == 'symbol' %}
+                <div data-aos="fade-in" data-aos-duration="1500" class="Symbol">{% include_block block %}</div>
+        {% elif block.block_type == 'topic' %}
+                <div style="display:'block'" class="topic">
+                    <h2 data-aos="fade-in" data-aos-duration="1500">{{ block.value.heading }}</h2>
+                    <p>{{ block.value.entrance }} </p>
+                </div>
+        {% elif block.block_type == 'quotation' %}
+                <div style="display:'block'" class="quotation" data-aos="fade-in-up" data-aos-duration="1500">
+                    {{ block.value.quote }}
+                    <p class="author">{{ block.value.author }} </p>
+                </div>
+        {% elif block.block_type == 'paragraph' %}
+                <div data-aos="fade-in" data-aos-duration="1500" class="paragraph">{% include_block block %}</div>
+        {% else %}
+                <div data-aos="fade-in" data-aos-duration="1500">{% include_block block %}</div>
+        {% endif %}
+    {% endfor %}
+
+</div>
+
+</div>
+
+
+{% endblock %}
